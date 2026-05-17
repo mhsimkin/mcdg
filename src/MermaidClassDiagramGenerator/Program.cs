@@ -46,7 +46,7 @@ var excludePatternsOption = new Option<IList<string>>(
     getDefaultValue: () => new List<string>());
 
 var highLevelOnlyOption = new Option<bool>(
-        aliases: new[] { "--high-level-only", "-h" },
+        aliases: new[] { "--high-level-only" },
         description: "Exclude all properties, methods, etc from generated diagram.",
         getDefaultValue: () => false);
 

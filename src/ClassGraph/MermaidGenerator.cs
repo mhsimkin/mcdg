@@ -28,7 +28,11 @@ classDiagram
 
     var allRelation = new List<string>();
     foreach (var relation in graph.Relations) {
-      var relationString = GenerateRelation(relation);
+            // if either end of the relation has empty/whitespace name, skip it to avoid breaking Mermaid syntax
+            if (string.IsNullOrWhiteSpace(relation.From?.Name) ||
+            string.IsNullOrWhiteSpace(relation.To?.Name)) continue;
+
+        var relationString = GenerateRelation(relation);
       allRelation.Add(relationString);
     }
 

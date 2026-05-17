@@ -1,8 +1,7 @@
 {
   "profiles": {
     "MermaidClassDiagramGenerator": {
-      "commandName": "Project",
-      "commandLineArgs": "--path D:\\Work\\BN\\ProductDataSystemsGitRepos\\Tools\\Messaging\\src --output D:\\Work\\BN\\ProductDataSystemsGitRepos\\Tools\\Messaging\\docs\\diagrams\\MessagingDiagram.md --high-level-only --diagram-direction LR --type-names IDelivery  MessagingException RabbitMqDelivery RabbitMqMessage IRabbitMqDelivery UnexpectedBinaryMessageException InvalidRoutingKeyException LegacyBackboneMessage IMessage --verbose"
+      "commandName": "Project"
     }
   }
 }
