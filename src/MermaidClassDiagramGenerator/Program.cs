@@ -1,5 +1,5 @@
 ﻿using System.CommandLine;
-using DiagramGenerator.ClassGraph;
+using ClassGraph;
 
 var outputOption = new Option<FileInfo?>(
     aliases: new[] { "--output", "-o" },
@@ -20,7 +20,8 @@ var inputPathOption = new Option<string>(
 var tnOption = new Option<IList<string>>(
     aliases: new[] { "--type-names", "-t" },
     description: "Specific classes to include.",
-    getDefaultValue: () => new List<string>());
+    getDefaultValue: () => new List<string>())
+    { AllowMultipleArgumentsPerToken = true };
 
 var ignoreDependencyOption = new Option<bool>(
     name: "--ignore-dependency",
@@ -44,6 +45,16 @@ var excludePatternsOption = new Option<IList<string>>(
     description: "Additional patterns to exclude from file search (e.g., 'Migrations', 'Generated').",
     getDefaultValue: () => new List<string>());
 
+var highLevelOnlyOption = new Option<bool>(
+        aliases: new[] { "--high-level-only" },
+        description: "Exclude all properties, methods, etc from generated diagram.",
+        getDefaultValue: () => false);
+
+var diagramDirectionOption = new Option<DiagramDirection>(
+    aliases: new[] { "--diagram-direction", "-d" },
+    description: "The direction that diagram should be generated (TB: Top to Bottom (default), BT: Bottom to Top, LR: Left to Right, RL: Right to Left)",
+    getDefaultValue: () => DiagramDirection.TB);
+
 var rootCommand = new RootCommand("Generate mermaid.js class-diagram from C# source code files.");
 rootCommand.AddOption(outputOption);
 rootCommand.AddOption(nsOption);
@@ -54,6 +65,8 @@ rootCommand.AddOption(excludeSystemTypesOption);
 rootCommand.AddOption(visibilityOption);
 rootCommand.AddOption(verboseOption);
 rootCommand.AddOption(excludePatternsOption);
+rootCommand.AddOption(highLevelOnlyOption);
+rootCommand.AddOption(diagramDirectionOption);
 
 rootCommand.SetHandler((context) =>
 {
@@ -66,8 +79,10 @@ rootCommand.SetHandler((context) =>
     var visLevel = context.ParseResult.GetValueForOption(visibilityOption);
     var verbose = context.ParseResult.GetValueForOption(verboseOption);
     var excludePatterns = context.ParseResult.GetValueForOption(excludePatternsOption);
+    var highLevelOnly = context.ParseResult.GetValueForOption(highLevelOnlyOption);
+    var diagramDirection = context.ParseResult.GetValueForOption(diagramDirectionOption);
 
-    Execute(output!, ns!, inputPath!, tns!, ignoreDep, excludeSys, visLevel!, verbose, excludePatterns!);
+    Execute(output!, ns!, inputPath!, tns!, ignoreDep, excludeSys, visLevel!, verbose, excludePatterns!, highLevelOnly, diagramDirection);
 });
 
 return await rootCommand.InvokeAsync(args);
@@ -80,7 +95,9 @@ static void Execute(FileInfo outputFile,
     bool excludeSystemTypes,
     string visibilityLevel,
     bool verbose,
-    IList<string> excludePatterns)
+    IList<string> excludePatterns,
+    bool highLevelOnly,
+    DiagramDirection diagramDirection)
 {
     try
     {
@@ -142,7 +159,7 @@ static void Execute(FileInfo outputFile,
 
         // 3. Generate Mermaid diagram
         var generator = new MermaidGenerator();
-        var text = generator.Generate(graph);
+        var text = generator.Generate(graph, highLevelOnly, diagramDirection);
 
         // 4. Write output
         File.WriteAllText(outputFile.FullName, text);
