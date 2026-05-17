@@ -1,9 +1,10 @@
-namespace DiagramGenerator.ClassGraph;
+namespace ClassGraph;
 
 public class MermaidGenerator : IDiagramGenerator {
   private static string MDFrame =
       @"```mermaid
 classDiagram
+    direction {2}
 
 {0}
 {1}
@@ -15,10 +16,13 @@ classDiagram
 {1}{2}
 }}";
 
-  public string Generate(Graph graph) {
+  public string Generate(Graph graph, bool highLevelOnly, DiagramDirection diagramDirection) {
     var allClass = new List<string>();
     foreach (var @class in graph.Classes) {
-      var classString = GenerateClass(@class);
+            // fixed an issue where a class with empty name would generate invalid
+            // Mermaid syntax and break the entire diagram - just skip any classes with empty/whitespace names
+            if (string.IsNullOrWhiteSpace(@class.Name)) continue;
+      var classString = GenerateClass(@class, highLevelOnly);
       allClass.Add(classString);
     }
 
@@ -40,16 +44,20 @@ classDiagram
       sections += "\r\n\r\n" + relationSection;
     }
 
-    return string.Format(MDFrame, sections, string.Empty);
+    return string.Format(MDFrame, sections, string.Empty, diagramDirection.ToString());
   }
 
-  private string GenerateClass(Class @class) {
+  private string GenerateClass(Class @class, bool highLevelOnly) {
     var lines = new List<string>();
 
     // Add type annotation (<<interface>>, <<record>>, etc.) as first line inside class block
     var typeAnnotation = GetTypeAnnotation(@class.Kind);
     if (!string.IsNullOrEmpty(typeAnnotation)) {
       lines.Add($"  {typeAnnotation}");
+    }
+
+    if (highLevelOnly) {
+      return string.Format(ClassFrame, @class.Name, string.Empty, string.Empty);
     }
 
     // For enums, add enum values instead of properties/methods

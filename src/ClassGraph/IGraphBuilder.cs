@@ -1,4 +1,4 @@
-﻿namespace DiagramGenerator.ClassGraph;
+﻿namespace ClassGraph;
 
 public interface IGraphBuilder
 {
