@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="nuget.config" />
+  </Folder>
   <Project Path="src/ClassGraph/ClassGraph.csproj" />
   <Project Path="src/MermaidClassDiagramGenerator/MermaidClassDiagramGenerator.csproj" />
 </Solution>
