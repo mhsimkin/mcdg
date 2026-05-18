@@ -42,6 +42,8 @@ Options:
   -ns, --namespace <namespace>    Namespace filter. []
   -p, --path <path> (REQUIRED)    Path to the folder containing .cs files.
   -t, --type-names <type-names>   Specific classes to include. []
+  --diagram-direction             Specifies the direction of the diagram. [default: TB], BT, LR, RL
+  --high-level-only               If true, only include high-level types (classes, interfaces, enums).
   --ignore-dependency             If true, skip dependency arrows.
   --version                       Show version information
   -?, -h, --help                  Show help and usage information
